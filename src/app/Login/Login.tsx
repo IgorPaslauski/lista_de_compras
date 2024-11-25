@@ -4,12 +4,16 @@ import Link from "next/link";
 import { InputCustomizado } from "../InputCustomizado";
 import { AuthButton } from "./AuthButton";
 import { FormError } from "./FormError";
+import { useRouter } from "next/navigation";
+import { Post } from "../utils/fetchUtils";
 
 export function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const router = useRouter();
 
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
@@ -21,53 +25,25 @@ export function Login() {
 
     setIsLoading(true);
 
-    try {
-      const data = { email, password };
+    const data = { email, password };
 
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      const raw = JSON.stringify(data);
-
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      } as RequestInit;
-
-      fetch(`${process.env.api}/users/autentica-user`, requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-          if (result.success) {
-            setError(""); // Limpar o erro
-            const nomeSigla = result.name.split(" ") || ["", ""];
-
-            let sigla = ""; // primeira letra do nome e do sobrenome
-            if (nomeSigla.length > 1) {
-              sigla = nomeSigla[0].charAt(0) + nomeSigla[1].charAt(0);
-            } else {
-              sigla = nomeSigla[0].charAt(0) + nomeSigla[0].charAt(1);
-            }
-            // Salvar o token no localStorage
-            localStorage.setItem("userId", result.userId);
-            localStorage.setItem("userName", result.name);
-            localStorage.setItem("userNameSigla", sigla.toUpperCase());
-
-            window.location.href = "/Lists"; // Redirecionar para login
-          } else {
-            setError(result.message);
-          }
-          setIsLoading(false);
-        })
-        .catch(() => {
-          setError("Login failed. Please try again.");
-          setIsLoading(false);
-        });
-    } catch {
-      setIsLoading(false);
-      setError("Login failed. Please try again.");
-    }
+    Post({
+      url: "auth/login",
+      params: data,
+      anonymous: true,
+      funcSuccess: (data) => {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.id);
+        router.push("/Lists");
+      },
+      funcError: () => {
+        setError("Login failed. Please try again.");
+        setIsLoading(false);
+      },
+      funcFinally: () => {
+        setIsLoading(false);
+      },
+    });
   };
 
   return (

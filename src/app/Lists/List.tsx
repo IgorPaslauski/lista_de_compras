@@ -11,33 +11,37 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ShoppingCart, Trash } from "lucide-react";
-import { UserList } from "./Lists/UserList";
+import { UserList } from "./UserList";
+import { Delete } from "../utils/fetchUtils";
 
 export function List({ list }: { list: UserList }) {
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    try {
-      await fetch(`${process.env.api}/lists/delete-list/${list.listId}`, {
-        method: "DELETE",
-      });
-
-      window.location.reload();
-    } catch {
-      console.error("Failed to delete list.");
-    }
+    await Delete({
+      url: `lists/delete-list/${list.listId}`,
+      funcSuccess: () => {
+        window.location.reload();
+      },
+      funcError: () => {
+        console.error("Failed to delete list.");
+      },
+      funcFinally: () => {},
+    });
   };
 
   const handleItemClick = async (e: React.MouseEvent<HTMLElement>) => {
     // redirecionar para a página de itens
     e.preventDefault();
-    window.location.href = `/ItemsList?listId=${list.listId}`;
   };
 
   return (
     <li>
-      <div className="flex w-full gap-2 cursor-pointer" onClick={handleItemClick}>
+      <div
+        className="flex w-full gap-2 cursor-pointer"
+        onClick={handleItemClick}
+      >
         <div>
           <ShoppingCart />
         </div>

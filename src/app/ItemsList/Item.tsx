@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Trash } from "lucide-react";
-import { ItemList } from "./ItemsList/ItemList";
+import { ItemList } from "./ItemList";
 
 export function Item({ item }: { item: ItemList }) {
   const handleDelete = () => {

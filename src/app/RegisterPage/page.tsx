@@ -1,4 +1,4 @@
-import { Register } from "../Login/Register";
+import { Register } from "./Register";
 import { Logo } from "../Logo";
 
 export default function Home() {

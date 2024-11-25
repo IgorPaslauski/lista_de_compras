@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Item } from "../Item";
+import { Item } from "../ItemsList/Item";
 import { ItemList } from "../ItemsList/ItemList";
 import ListItensNoItems from "./ListItensNoItems";
 

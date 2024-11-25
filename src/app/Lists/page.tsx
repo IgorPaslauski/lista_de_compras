@@ -12,52 +12,55 @@ import { ListLists } from "./ListList";
 import { Logo } from "../Logo";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { UserList } from "./UserList";
+import { useEffect, useState } from "react";
+import { InputCustomizado } from "../InputCustomizado";
+import { useToast } from "@/hooks/use-toast";
+import { Get, Post } from "../utils/fetchUtils";
 
 export default function Home() {
   const [name, setName] = useState("");
   const userId = localStorage.getItem("userId");
+  const { toast } = useToast();
 
   if (!userId) {
     window.location.href = "/";
   }
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  // Função para lidar com o cancelamento
-  const handleCancel = () => {
-    setIsOpen(false); // Fecha o diálogo
-  };
-
-  const handleCreateList = async () => {
-    try {
-      setLoading(true);
-      fetch(`${process.env.api}/lists/create-list`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ listName: name, userId }),
-      }).then(() => {
-        setLoading(false);
-        setIsOpen(false);
-        window.location.reload();
-      });
-    } catch {
-      console.error("Failed to create list.");
-    }
-  };
-
   const userNameSigla = localStorage.getItem("userNameSigla");
+
+  const [loading, setLoading] = useState(false);
+  const [loadingList, setLoadingList] = useState(true);
+  const [listas, setListas] = useState<UserList[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleCreateList = async () => {};
+  const handleCancel = () => {};
+
+  useEffect(() => {
+    Get({
+      url: `${process.env.api}/lists/find-list-by-user/${userId}`,
+      funcSuccess: (data) => {
+        setListas(data);
+        setLoadingList(false);
+      },
+      funcError: () => {
+        toast({
+          title: "Failed to load lists.",
+          description: `${new Date().toLocaleString()}`,
+          variant: "destructive",
+        });
+      },
+      funcFinally: () => {},
+    });
+  }, []);
+
   return (
     <>
       <main className="conteudo-main-home">
         <Logo />
         <div className="container-conteudo">
           <div className="container-conteudo-list">
-            <ListLists />
+            <ListLists items={listas} pending={loadingList} />
           </div>
           <footer className="container-conteudo-footer">
             <button>{userNameSigla}</button>
@@ -79,12 +82,12 @@ export default function Home() {
                   </DialogDescription>
                 </DialogHeader>
 
-                <Input
-                  name="name"
+                <InputCustomizado
                   placeholder="Name of the list"
                   type={"text"}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  ariaLabel={""}
                 />
 
                 <DialogFooter>
