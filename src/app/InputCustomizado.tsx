@@ -6,6 +6,7 @@ interface InputProps {
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   ariaLabel: string;
+  disabled?: boolean;
 }
 
 export const InputCustomizado: React.FC<InputProps> = ({

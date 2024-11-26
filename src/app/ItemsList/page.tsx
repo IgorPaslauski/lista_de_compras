@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Post } from "../utils/fetchUtils";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -37,21 +38,25 @@ export default function Home() {
   const handleCreateItem = async () => {
     try {
       setLoading(true);
-      fetch(`${process.env.api}/items/create-item`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      await Post({
+        url: "items/create-item",
+        params: {
           itemName: name,
           description,
           listId,
           purchased: false,
-        }),
-      }).then(() => {
-        setLoading(false);
-        setIsOpen(false);
-        window.location.reload();
+        },
+        funcSuccess: () => {
+          setLoading(false);
+          setIsOpen(false);
+          window.location.reload();
+        },
+        funcError: () => {
+          console.error("Failed to create item.");
+        },
+        funcFinally: () => {
+          setLoading(false);
+        },
       });
     } catch {
       console.error("Failed to create item.");
@@ -104,7 +109,7 @@ export default function Home() {
                   />
 
                   <DialogFooter>
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 w-full">
                       <Button type="button" onClick={handleCancel}>
                         Cancel
                       </Button>

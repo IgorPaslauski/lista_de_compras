@@ -8,12 +8,16 @@ import { useRouter } from "next/navigation";
 import { Post } from "../utils/fetchUtils";
 
 export function Login() {
+  const router = useRouter();
+  const token = localStorage.getItem("token");
+  if (token) {
+    router.push("/Lists");
+  }
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const router = useRouter();
 
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
@@ -34,6 +38,21 @@ export function Login() {
       funcSuccess: (data) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.id);
+
+        // pega o nome do usuário e armazena como sigla, se existir mais de um nome pega as iniciais, se não pega os 2 primeiros caracteres
+        const userName = data.nome;
+        let userNameSigla = "";
+        if (userName.split(" ").length > 1) {
+          userNameSigla = userName
+            .split(" ")
+            .map((n: string) => n[0])
+            .join("");
+        } else {
+          userNameSigla = userName.substring(0, 2);
+        }
+
+        localStorage.setItem("userNameSigla", userNameSigla);
+
         router.push("/Lists");
       },
       funcError: () => {

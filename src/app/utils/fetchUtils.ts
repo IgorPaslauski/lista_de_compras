@@ -60,7 +60,7 @@ export async function Get(props: IFetchProps) {
 }
 
 export async function Post(props: IFetchProps) {
-  const headers = CreateHeaders(props.anonymous || true);
+  const headers = CreateHeaders(props.anonymous || false);
 
   return await fetch(`${process.env.api}/api/${props.url}`, {
     method: "POST",
@@ -92,7 +92,7 @@ export async function Post(props: IFetchProps) {
 }
 
 export async function Put(props: IFetchProps) {
-  const headers = CreateHeaders(props.anonymous || true);
+  const headers = CreateHeaders(props.anonymous || false);
 
   return await fetch(`${process.env.api}/api/${props.url}`, {
     method: "PUT",
@@ -122,7 +122,7 @@ export async function Put(props: IFetchProps) {
 }
 
 export async function Delete(props: IFetchProps) {
-  const headers = CreateHeaders(props.anonymous || true);
+  const headers = CreateHeaders(props.anonymous || false);
 
   return await fetch(`${process.env.api}/api/${props.url}`, {
     method: "DELETE",
@@ -131,7 +131,7 @@ export async function Delete(props: IFetchProps) {
   })
     .then((response) => {
       if (response.ok) {
-        return response.json();
+        return;
       }
       throw new Error(response.statusText);
     })

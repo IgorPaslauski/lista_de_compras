@@ -17,6 +17,9 @@ import { useEffect, useState } from "react";
 import { InputCustomizado } from "../InputCustomizado";
 import { useToast } from "@/hooks/use-toast";
 import { Get, Post } from "../utils/fetchUtils";
+import { useRouter } from "next/navigation";
+import "./profile.css";
+import Profile from "./Profile";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -33,12 +36,14 @@ export default function Home() {
   const [listas, setListas] = useState<UserList[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleCreateList = async () => {};
-  const handleCancel = () => {};
+  const handleCancel = () => {
+    setName("");
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     Get({
-      url: `${process.env.api}/lists/find-list-by-user/${userId}`,
+      url: `lists/find-list-by-user/${userId}`,
       funcSuccess: (data) => {
         setListas(data);
         setLoadingList(false);
@@ -54,6 +59,50 @@ export default function Home() {
     });
   }, []);
 
+  const handleCreateList = async () => {
+    if (!name) {
+      toast({
+        title: "Please fill in the name of the list.",
+        description: `${new Date().toLocaleString()}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    const data = {
+      listName: name,
+      userId: userId,
+    };
+
+    Post({
+      url: `lists/create-list`,
+      params: data,
+      funcSuccess: () => {
+        toast({
+          title: "List created successfully.",
+          description: `${new Date().toLocaleString()}`,
+          variant: "success",
+        });
+        window.location.reload();
+      },
+      funcError: () => {
+        toast({
+          title: "Failed to create list.",
+          description: `${new Date().toLocaleString()}`,
+          variant: "destructive",
+        });
+        setLoading(false);
+      },
+      funcFinally: () => {
+        setLoading(false);
+      },
+    });
+  };
+
+  const router = useRouter();
+
   return (
     <>
       <main className="conteudo-main-home">
@@ -63,7 +112,32 @@ export default function Home() {
             <ListLists items={listas} pending={loadingList} />
           </div>
           <footer className="container-conteudo-footer">
-            <button>{userNameSigla}</button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button>{userNameSigla}</button>
+              </DialogTrigger>
+
+              <DialogContent>
+                <Profile />
+
+                <DialogFooter>
+                  <div className="flex gap-4">
+                    <Button
+                      type="button"
+                      className="w-full bg-red-500"
+                      onClick={() => {
+                        localStorage.removeItem("userId");
+                        localStorage.removeItem("token");
+
+                        router.push("/");
+                      }}
+                    >
+                      Log out
+                    </Button>
+                  </div>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <button className="container-conteudo-footer-backHome">
               <Logo />
             </button>

@@ -1,6 +1,7 @@
 "use client";
 import { UserList } from "./UserList";
 import { List } from "./List";
+import LoadingPersonalizado from "@/components/LoadingPersonalizado";
 
 export function ListLists({
   items,
@@ -10,11 +11,7 @@ export function ListLists({
   pending: boolean;
 }) {
   if (pending) {
-    return (
-      <div className="list-loading">
-        <h1>Loading...</h1>
-      </div>
-    );
+    return <LoadingPersonalizado />;
   }
   return (
     <ul>

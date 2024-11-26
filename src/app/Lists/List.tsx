@@ -10,14 +10,19 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { ShoppingCart, Trash } from "lucide-react";
+import { PackageOpen, ShoppingCart, Trash } from "lucide-react";
 import { UserList } from "./UserList";
 import { Delete } from "../utils/fetchUtils";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function List({ list }: { list: UserList }) {
+  const [loading, setLoading] = useState(false);
+
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    setLoading(true);
 
     await Delete({
       url: `lists/delete-list/${list.listId}`,
@@ -27,17 +32,24 @@ export function List({ list }: { list: UserList }) {
       funcError: () => {
         console.error("Failed to delete list.");
       },
-      funcFinally: () => {},
+      funcFinally: () => {
+        setLoading(false);
+      },
     });
   };
 
+  const router = useRouter();
+
   const handleItemClick = async (e: React.MouseEvent<HTMLElement>) => {
-    // redirecionar para a página de itens
+    // redirecionar para a página de itens, usando o redirecionamento do Next.js e passando o id da lista
     e.preventDefault();
+
+    router.push(`/ItemsList?listId=${list.listId}`);
   };
 
   return (
-    <li>
+    // se tiver todos os itens comprados, deixar o texto em tachado
+    <li {...(list.allItemsPurchased && !list.listEmpty ? { className: "line-through" } : {})}>
       <div
         className="flex w-full gap-2 cursor-pointer"
         onClick={handleItemClick}
@@ -47,7 +59,12 @@ export function List({ list }: { list: UserList }) {
         </div>
         <div className="list-label">{list.listName}</div>
       </div>
-      <div>
+      <div className="flex gap-2">
+        {list.listEmpty ? (
+          <PackageOpen xlinkTitle="Lista vazia" className="text-gray-400" />
+        ) : (
+          <></>
+        )}
         <Dialog>
           <DialogTrigger asChild>
             <button>
@@ -67,8 +84,12 @@ export function List({ list }: { list: UserList }) {
               <DialogClose asChild>
                 <Button>Cancel</Button>
               </DialogClose>
-              <Button variant="destructive" onClick={handleDelete}>
-                Delete
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Delete"}
               </Button>
             </DialogFooter>
           </DialogContent>

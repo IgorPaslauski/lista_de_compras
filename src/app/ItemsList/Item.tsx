@@ -13,16 +13,27 @@ import {
 } from "@/components/ui/dialog";
 import { Trash } from "lucide-react";
 import { ItemList } from "./ItemList";
+import { Delete, Put } from "../utils/fetchUtils";
+import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export function Item({ item }: { item: ItemList }) {
+
+  const [loading, setLoading] = useState(false);
+
   const handleDelete = () => {
-    fetch(`${process.env.api}/items/delete-item/${item.id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    setLoading(true);
+    Delete({
+      url: `items/delete-item/${item.id}`,
+      funcSuccess: () => {
+        window.location.reload();
       },
-    }).then(() => {
-      window.location.reload();
+      funcError: () => {
+        console.error("Failed to delete item.");
+      },
+      funcFinally: () => {
+        setLoading(false);
+      },
     });
   };
   const handleCheck = () => {
@@ -31,17 +42,22 @@ export function Item({ item }: { item: ItemList }) {
       purchased: !item.purchased,
       itemName: item.itemName,
       description: item.description,
-    }
+    };
 
-    console.log(data);
-    fetch(`${process.env.api}/items/update-item/${item.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
+    Put({
+      url: `items/update-item/${item.id}`,
+      params: data,
+      funcSuccess: () => {
+        toast({
+          title: "Item updated successfully.",
+          description: `${new Date().toLocaleString()}`,
+          variant: "success",
+        });
       },
-      body: JSON.stringify(data),
-    }).then(() => {
-     window.location.reload();
+      funcError: () => {
+        console.error("Failed to update item.");
+      },
+      funcFinally: () => {},
     });
   };
   return (
@@ -86,8 +102,9 @@ export function Item({ item }: { item: ItemList }) {
                   type="submit"
                   variant="destructive"
                   onClick={() => handleDelete}
+                  disabled={loading}
                 >
-                  Delete
+                  {loading ? "Deleting..." : "Delete"}
                 </Button>
               </DialogFooter>
             </form>

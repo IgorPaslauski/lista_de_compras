@@ -2,6 +2,9 @@
 import Link from "next/link";
 import { InputCustomizado } from "../InputCustomizado";
 import { useState } from "react";
+import { Post } from "../utils/fetchUtils";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 export function Register() {
   const [name, setName] = useState<string>("");
@@ -9,6 +12,7 @@ export function Register() {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const router = useRouter();
 
   const handleRegister = async (event: React.FormEvent) => {
     event.preventDefault(); // Previne o comportamento padrão do formulário
@@ -27,21 +31,24 @@ export function Register() {
     try {
       // Enviar dados para o backend
       const data = { name, email, password };
-      const response = await fetch(`${process.env.api}/users/create-user`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
 
-      const dataReturn = await response.json();
-      if (dataReturn.status === "error") {
-        setError(dataReturn.message);
-      } else {
-        setError(""); // Limpar o erro
-        window.location.href = "/"; // Redirecionar para login
-      }
+      Post({
+        url: "auth/register",
+        params: data,
+        anonymous: true,
+        funcSuccess: () => {
+          toast({
+            title: "Registration successful.",
+            description: `${new Date().toLocaleString()}`,
+            variant: "success",
+          });
+          router.push("/");
+        },
+        funcError: () => {
+          setError("Registration failed. Please try again.");
+        },
+        funcFinally: () => {},
+      });
     } catch {
       setError("Registration failed. Please try again.");
     }
