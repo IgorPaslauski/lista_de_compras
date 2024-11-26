@@ -40,6 +40,9 @@ export async function Get(props: IFetchProps) {
     .then((response) => {
       if (response.ok) {
         return response.json();
+      } else if (response.status === 403) {
+        window.location.href = "/";
+        localStorage.clear();
       }
       throw new Error(response.statusText);
     })
@@ -72,6 +75,9 @@ export async function Post(props: IFetchProps) {
     .then((response) => {
       if (response.ok) {
         return response.json();
+      } else if (response.status === 403) {
+        window.location.href = "/";
+        localStorage.clear();
       }
       throw new Error(response.statusText);
     })
@@ -79,6 +85,10 @@ export async function Post(props: IFetchProps) {
       props.funcSuccess(data);
     })
     .catch((error) => {
+      // se for 403, redireciona para a página de login
+      if (error.status === 403) {
+        window.location.href = "/";
+      }
       toast({
         title: error.message,
         description: `${new Date().toLocaleString()}`,
@@ -102,6 +112,9 @@ export async function Put(props: IFetchProps) {
     .then((response) => {
       if (response.ok) {
         return response.json();
+      } else if (response.status === 403) {
+        window.location.href = "/";
+        localStorage.clear();
       }
       throw new Error(response.statusText);
     })
@@ -109,6 +122,10 @@ export async function Put(props: IFetchProps) {
       props.funcSuccess(data);
     })
     .catch((error) => {
+      // se for 403, redireciona para a página de login
+      if (error.status === 403) {
+        window.location.href = "/";
+      }
       toast({
         title: error.message,
         description: `${new Date().toLocaleString()}`,
@@ -132,6 +149,9 @@ export async function Delete(props: IFetchProps) {
     .then((response) => {
       if (response.ok) {
         return;
+      } else if (response.status === 403) {
+        window.location.href = "/";
+        localStorage.clear();
       }
       throw new Error(response.statusText);
     })
@@ -139,6 +159,10 @@ export async function Delete(props: IFetchProps) {
       props.funcSuccess(data);
     })
     .catch((error) => {
+      // se for 403, redireciona para a página de login
+      if (error.status === 403) {
+        window.location.href = "/";
+      }
       toast({
         title: error.message,
         description: `${new Date().toLocaleString()}`,
