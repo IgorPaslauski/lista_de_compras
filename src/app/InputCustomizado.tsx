@@ -7,6 +7,7 @@ interface InputProps {
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   ariaLabel: string;
   disabled?: boolean;
+  readonly?: boolean;
 }
 
 export const InputCustomizado: React.FC<InputProps> = ({
@@ -15,6 +16,8 @@ export const InputCustomizado: React.FC<InputProps> = ({
   value,
   onChange,
   ariaLabel,
+  disabled,
+  readonly,
 }) => {
   return (
     <input
@@ -24,6 +27,8 @@ export const InputCustomizado: React.FC<InputProps> = ({
       onChange={onChange}
       aria-label={ariaLabel}
       className="input-customizado"
+      disabled={disabled || false}
+      readOnly={readonly || false}
     />
   );
 };
