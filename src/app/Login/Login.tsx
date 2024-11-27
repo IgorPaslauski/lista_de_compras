@@ -31,7 +31,7 @@ export function Login() {
 
     const data = { email, password };
 
-    Post({
+    await Post({
       url: "auth/login",
       params: data,
       anonymous: true,
@@ -55,9 +55,16 @@ export function Login() {
 
         router.push("/Lists");
       },
-      funcError: () => {
-        setError("Login failed. Please try again.");
+      funcError: (ret) => {
         setIsLoading(false);
+
+        if (ret.then) {
+          ret?.then((data) => {
+            setError(data.message);
+          });
+          return;
+        }
+        setError("Login failed. Please try again.");
       },
       funcFinally: () => {
         setIsLoading(false);

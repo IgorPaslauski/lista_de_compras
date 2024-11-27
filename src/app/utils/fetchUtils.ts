@@ -6,13 +6,8 @@ export class IFetchProps {
   params?: any = {};
   anonymous?: boolean = false;
   funcSuccess: (data: any) => void = () => {};
-  funcError: (data: IErrorFetch) => void = () => {};
+  funcError: (data: any) => void = () => {};
   funcFinally: () => void = () => {};
-}
-
-export interface IErrorFetch {
-  message: string;
-  status: number;
 }
 
 export function CreateHeaders(anonymous: boolean) {
@@ -44,8 +39,10 @@ export async function Get(props: IFetchProps) {
       } else if (response.status === 403) {
         window.location.href = "/";
         localStorage.clear();
+      } else if (response.status === 400) {
+        props.funcError(response.json());
       }
-      throw new Error(response.statusText);
+      throw new Error("Failed to fetch data.");
     })
     .then((data) => {
       props.funcSuccess(data);
@@ -56,7 +53,7 @@ export async function Get(props: IFetchProps) {
         description: `${new Date().toLocaleString()}`,
         variant: "destructive",
       });
-      props.funcError({ message: error.message, status: error.status });
+      props.funcError(error);
     })
     .finally(() => {
       props.funcFinally();
@@ -79,8 +76,10 @@ export async function Post(props: IFetchProps) {
       } else if (response.status === 403) {
         window.location.href = "/";
         localStorage.clear();
+      } else if (response.status === 400) {
+        props.funcError(response.json());
       }
-      throw new Error(response.statusText);
+      throw new Error("Failed to fetch data.");
     })
     .then((data) => {
       props.funcSuccess(data);
@@ -90,12 +89,15 @@ export async function Post(props: IFetchProps) {
       if (error.status === 403) {
         window.location.href = "/";
       }
-      toast({
-        title: error.message,
-        description: `${new Date().toLocaleString()}`,
-        variant: "destructive",
-      });
-      props.funcError({ message: error.message, status: error.status });
+
+      if (!props.anonymous) {
+        toast({
+          title: error.message,
+          description: `${new Date().toLocaleString()}`,
+          variant: "destructive",
+        });
+      }
+      props.funcError(error);
     })
     .finally(() => {
       props.funcFinally();
@@ -116,8 +118,10 @@ export async function Put(props: IFetchProps) {
       } else if (response.status === 403) {
         window.location.href = "/";
         localStorage.clear();
+      } else if (response.status === 400) {
+        props.funcError(response.json());
       }
-      throw new Error(response.statusText);
+      throw new Error("Failed to fetch data.");
     })
     .then((data) => {
       props.funcSuccess(data);
@@ -132,7 +136,7 @@ export async function Put(props: IFetchProps) {
         description: `${new Date().toLocaleString()}`,
         variant: "destructive",
       });
-      props.funcError({ message: error.message, status: error.status });
+      props.funcError(error);
     })
     .finally(() => {
       props.funcFinally();
@@ -153,8 +157,10 @@ export async function Delete(props: IFetchProps) {
       } else if (response.status === 403) {
         window.location.href = "/";
         localStorage.clear();
+      } else if (response.status === 400) {
+        props.funcError(response.json());
       }
-      throw new Error(response.statusText);
+      throw new Error("Failed to fetch data.");
     })
     .then((data) => {
       props.funcSuccess(data);
@@ -169,7 +175,7 @@ export async function Delete(props: IFetchProps) {
         description: `${new Date().toLocaleString()}`,
         variant: "destructive",
       });
-      props.funcError({ message: error.message, status: error.status });
+      props.funcError(error);
     })
     .finally(() => {
       props.funcFinally();
