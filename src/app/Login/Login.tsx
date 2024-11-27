@@ -51,7 +51,7 @@ export function Login() {
           userNameSigla = userName.substring(0, 2);
         }
 
-        localStorage.setItem("userNameSigla", userNameSigla);
+        localStorage.setItem("userNameSigla", userNameSigla.toUpperCase());
 
         router.push("/Lists");
       },

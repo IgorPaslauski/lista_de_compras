@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { ListItens } from "../Lists/ListItens";
 import { Logo } from "../Logo";
-import { ArrowLeft, FileUp, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Share } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import {
   Dialog,
@@ -122,7 +122,7 @@ export default function Home() {
               </Dialog>
             </div>
             <button>
-              <FileUp />
+              <Share />
             </button>
           </footer>
         </div>
