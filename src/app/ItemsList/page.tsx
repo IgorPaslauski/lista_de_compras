@@ -55,6 +55,10 @@ export default function Home() {
         funcSuccess: () => {
           setLoading(false);
           setIsOpen(false);
+
+          setName("");
+          setDescription("");
+
           setRefresh((prev) => !prev);
         },
         funcError: () => {
