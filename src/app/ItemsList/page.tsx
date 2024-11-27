@@ -116,7 +116,7 @@ export default function Home() {
                 <ArrowLeft />
               </button>
             </Link>
-            <div>
+            <div className="flex" style={{ width: "3rem", height: "3rem" }}>
               <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                   <Button>
@@ -148,20 +148,20 @@ export default function Home() {
                   />
 
                   <DialogFooter>
-                     <Button
-                        type="button"
-                        onClick={handleCancel}
-                        className="w-full bg-gray-800"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        onClick={handleCreateItem}
-                        className="bg-green-500"
-                      >
-                        {loading ? "Creating..." : "Create"}
-                      </Button>
+                    <Button
+                      type="button"
+                      onClick={handleCancel}
+                      className="w-full bg-gray-800"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      onClick={handleCreateItem}
+                      className="bg-green-500"
+                    >
+                      {loading ? "Creating..." : "Create"}
+                    </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

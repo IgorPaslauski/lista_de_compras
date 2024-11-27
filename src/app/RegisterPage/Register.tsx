@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Link from "next/link";
 import { InputCustomizado } from "../InputCustomizado";
@@ -12,6 +13,7 @@ export function Register() {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleRegister = async (event: React.FormEvent) => {
@@ -31,7 +33,7 @@ export function Register() {
     try {
       // Enviar dados para o backend
       const data = { name, email, password };
-
+      setLoading(true);
       Post({
         url: "users/create-user",
         params: data,
@@ -44,10 +46,18 @@ export function Register() {
           });
           router.push("/");
         },
-        funcError: () => {
+        funcError: (ret) => {
+           if (ret.then) {
+             ret?.then((data: any) => {
+               setError(data.message);
+             });
+             return;
+           }
           setError("Registration failed. Please try again.");
         },
-        funcFinally: () => {},
+        funcFinally: () => {
+          setLoading(false);
+        },
       });
     } catch {
       setError("Registration failed. Please try again.");
@@ -88,7 +98,7 @@ export function Register() {
           value={confirmPassword}
         />
         <button type="submit" className="button-login bg-gray-800 p-2 w-full">
-          Register
+          {loading ? "Registering..." : "Register"}
         </button>
         <span className="register-now">
           Already have an account?{" "}

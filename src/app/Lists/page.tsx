@@ -36,7 +36,6 @@ export default function Home() {
     setUserNameSigla(localStorage.getItem("userNameSigla") || "");
   }, [router]);
 
-
   const [loading, setLoading] = useState(false);
   const [loadingList, setLoadingList] = useState(true);
   const [listas, setListas] = useState<UserList[]>([]);
@@ -170,47 +169,49 @@ export default function Home() {
             <button className="container-conteudo-footer-backHome">
               <Logo />
             </button>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus></Plus>
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create List</DialogTitle>
-                  <DialogDescription>
-                    Are you sure you want to create a new list?
-                  </DialogDescription>
-                </DialogHeader>
-
-                <InputCustomizado
-                  placeholder="Name of the list"
-                  type={"text"}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  ariaLabel={""}
-                />
-
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    onClick={handleCancel}
-                    className="w-full bg-gray-800"
-                  >
-                    Cancel
+            <div className="flex" style={{ width: "3rem", height: "3rem" }}>
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus></Plus>
                   </Button>
-                  <Button
-                    type="submit"
-                    onClick={handleCreateList}
-                    className="bg-green-500"
-                  >
-                    {loading ? "Creating..." : "Create"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create List</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to create a new list?
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <InputCustomizado
+                    placeholder="Name of the list"
+                    type={"text"}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    ariaLabel={""}
+                  />
+
+                  <DialogFooter>
+                    <Button
+                      type="button"
+                      onClick={handleCancel}
+                      className="w-full bg-gray-800"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      onClick={handleCreateList}
+                      className="bg-green-500"
+                    >
+                      {loading ? "Creating..." : "Create"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           </footer>
         </div>
       </main>
