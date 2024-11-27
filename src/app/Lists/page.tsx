@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ListLists } from "./ListList";
 import { Logo } from "../Logo";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,14 +19,16 @@ import { Get, Post } from "../utils/fetchUtils";
 import { useRouter } from "next/navigation";
 import "./profile.css";
 import Profile from "./Profile";
+import { List } from "./List";
+import LoadingPersonalizado from "@/components/LoadingPersonalizado";
 
 export default function Home() {
   const [name, setName] = useState("");
   const userId = localStorage.getItem("userId");
   const { toast } = useToast();
-
+  const router = useRouter();
   if (!userId) {
-    window.location.href = "/";
+    router.push("/");
   }
   const userNameSigla = localStorage.getItem("userNameSigla");
 
@@ -36,12 +37,15 @@ export default function Home() {
   const [listas, setListas] = useState<UserList[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
+  const [refresh, setRefresh] = useState(false);
+
   const handleCancel = () => {
     setName("");
     setIsOpen(false);
   };
 
   useEffect(() => {
+    setLoadingList(true);
     Get({
       url: `lists/find-list-by-user/${userId}`,
       funcSuccess: (data) => {
@@ -57,7 +61,7 @@ export default function Home() {
       },
       funcFinally: () => {},
     });
-  }, []);
+  }, [toast, userId, refresh]);
 
   const handleCreateList = async () => {
     if (!name) {
@@ -85,7 +89,8 @@ export default function Home() {
           description: `${new Date().toLocaleString()}`,
           variant: "success",
         });
-        window.location.reload();
+
+        setRefresh((prev) => !prev);
       },
       funcError: () => {
         toast({
@@ -97,11 +102,10 @@ export default function Home() {
       },
       funcFinally: () => {
         setLoading(false);
+        setIsOpen(false);
       },
     });
   };
-
-  const router = useRouter();
 
   return (
     <>
@@ -109,7 +113,25 @@ export default function Home() {
         <Logo />
         <div className="container-conteudo">
           <div className="container-conteudo-list">
-            <ListLists items={listas} pending={loadingList} />
+            <ul>
+              {loadingList ? (
+                <LoadingPersonalizado />
+              ) : listas.length === 0 ? (
+                <div className="list-no-have-items">
+                  <h1>No Lists</h1>
+                </div>
+              ) : (
+                listas.map((item) => (
+                  <List
+                    key={item.listId}
+                    list={item}
+                    onDelete={function (): void {
+                      setRefresh((prev) => !prev);
+                    }}
+                  />
+                ))
+              )}
+            </ul>
           </div>
           <footer className="container-conteudo-footer">
             <Dialog>

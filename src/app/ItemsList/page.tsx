@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
-import { ListItens } from "../Lists/ListItens";
 import { Logo } from "../Logo";
 import { ArrowLeft, Plus, Share } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -14,21 +13,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Post } from "../utils/fetchUtils";
+import { Get, Post } from "../utils/fetchUtils";
+import { ItemList } from "./ItemList";
+import LoadingPersonalizado from "@/components/LoadingPersonalizado";
+import ListItensNoItems from "../Lists/ListItensNoItems";
+import { Item } from "./Item";
 
 export default function Home() {
   const searchParams = useSearchParams();
 
   const listId = searchParams?.get("listId") || "";
-
+  const [refresh, setRefresh] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingList, setLoadingList] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+
+  const router = useRouter();
   if (!listId) {
-    window.location.href = "/Lists";
+    router.push("/Lists");
   }
 
   const handleCancel = () => {
@@ -49,7 +55,7 @@ export default function Home() {
         funcSuccess: () => {
           setLoading(false);
           setIsOpen(false);
-          window.location.reload();
+          setRefresh((prev) => !prev);
         },
         funcError: () => {
           console.error("Failed to create item.");
@@ -63,13 +69,41 @@ export default function Home() {
     }
   };
 
+  const [items, setItems] = useState([] as ItemList[]);
+  useEffect(() => {
+    setLoadingList(true);
+    Get({
+      url: `items/find-by-list/${listId}`,
+      funcSuccess: (data) => {
+        setItems(data);
+      },
+      funcError: () => {
+        console.error("Failed to load items.");
+      },
+      funcFinally: () => {
+        setLoadingList(false);
+      },
+    });
+  }, [listId, refresh]);
+
   return (
     <>
       <main className="conteudo-main-home">
         <Logo />
         <div className="container-conteudo">
           <div className="container-conteudo-list">
-            <ListItens listId={listId} />
+            <ul>
+              {loadingList && <LoadingPersonalizado />}
+              {!loadingList && items.length === 0 && <ListItensNoItems />}
+              {!loadingList &&
+                items.map((item: ItemList) => (
+                  <Item
+                    key={item.id}
+                    item={item}
+                    onDelete={() => setRefresh((prev) => !prev)}
+                  />
+                ))}
+            </ul>
           </div>
           <footer className="container-conteudo-footer">
             <Link href="/Lists">

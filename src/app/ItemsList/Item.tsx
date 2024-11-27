@@ -16,17 +16,31 @@ import { ItemList } from "./ItemList";
 import { Delete, Put } from "../utils/fetchUtils";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export function Item({ item }: { item: ItemList }) {
-
+export function Item({
+  item,
+  onDelete,
+}: {
+  item: ItemList;
+  onDelete: () => void;
+}) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const handleDelete = () => {
+  const handleDelete = async (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     setLoading(true);
-    Delete({
+    await Delete({
       url: `items/delete-item/${item.id}`,
       funcSuccess: () => {
-        window.location.reload();
+        toast({
+          title: "Item deleted successfully.",
+          description: `${new Date().toLocaleString()}`,
+          variant: "success",
+        });
+        onDelete();
       },
       funcError: () => {
         console.error("Failed to delete item.");
@@ -36,15 +50,16 @@ export function Item({ item }: { item: ItemList }) {
       },
     });
   };
-  const handleCheck = () => {
+  const handleCheck = async () => {
     const data = {
       id: item.id,
       purchased: !item.purchased,
       itemName: item.itemName,
       description: item.description,
+      listId: item.listId,
     };
 
-    Put({
+    await Put({
       url: `items/update-item/${item.id}`,
       params: data,
       funcSuccess: () => {
@@ -53,9 +68,14 @@ export function Item({ item }: { item: ItemList }) {
           description: `${new Date().toLocaleString()}`,
           variant: "success",
         });
+        router.refresh();
       },
       funcError: () => {
-        console.error("Failed to update item.");
+        toast({
+          title: "Failed to update item.",
+          description: `${new Date().toLocaleString()}`,
+          variant: "destructive",
+        });
       },
       funcFinally: () => {},
     });
@@ -80,7 +100,7 @@ export function Item({ item }: { item: ItemList }) {
       <div>
         <Dialog>
           <DialogTrigger asChild>
-            <button>
+            <button style={{ background: "none", border: "none" }}>
               <Trash />
             </button>
           </DialogTrigger>
@@ -93,21 +113,18 @@ export function Item({ item }: { item: ItemList }) {
               </DialogDescription>
             </DialogHeader>
 
-            <form>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button>Cancel</Button>
-                </DialogClose>
-                <Button
-                  type="submit"
-                  variant="destructive"
-                  onClick={() => handleDelete}
-                  disabled={loading}
-                >
-                  {loading ? "Deleting..." : "Delete"}
-                </Button>
-              </DialogFooter>
-            </form>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={loading}
+              >
+                {loading ? "Deleting..." : "Delete"}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

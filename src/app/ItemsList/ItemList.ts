@@ -3,4 +3,5 @@ export interface ItemList {
   itemName: string;
   description: string;
   purchased: boolean;
+  listId: string;
 }

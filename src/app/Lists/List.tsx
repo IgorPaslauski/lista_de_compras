@@ -16,9 +16,16 @@ import { Delete } from "../utils/fetchUtils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function List({ list }: { list: UserList }) {
+export function List({
+  list,
+  onDelete,
+}: {
+  list: UserList;
+  onDelete: () => void;
+}) {
   const [loading, setLoading] = useState(false);
 
+  const router = useRouter();
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -27,7 +34,8 @@ export function List({ list }: { list: UserList }) {
     await Delete({
       url: `lists/delete-list/${list.listId}`,
       funcSuccess: () => {
-        window.location.reload();
+        router.refresh();
+        onDelete();
       },
       funcError: () => {
         console.error("Failed to delete list.");
@@ -38,8 +46,6 @@ export function List({ list }: { list: UserList }) {
     });
   };
 
-  const router = useRouter();
-
   const handleItemClick = async (e: React.MouseEvent<HTMLElement>) => {
     // redirecionar para a página de itens, usando o redirecionamento do Next.js e passando o id da lista
     e.preventDefault();
@@ -49,7 +55,11 @@ export function List({ list }: { list: UserList }) {
 
   return (
     // se tiver todos os itens comprados, deixar o texto em tachado
-    <li {...(list.allItemsPurchased && !list.listEmpty ? { className: "line-through" } : {})}>
+    <li
+      {...(list.allItemsPurchased && !list.listEmpty
+        ? { className: "line-through" }
+        : {})}
+    >
       <div
         className="flex w-full gap-2 cursor-pointer"
         onClick={handleItemClick}
