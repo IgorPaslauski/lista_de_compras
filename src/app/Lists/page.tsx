@@ -24,13 +24,18 @@ import LoadingPersonalizado from "@/components/LoadingPersonalizado";
 
 export default function Home() {
   const [name, setName] = useState("");
-  const userId = localStorage.getItem("userId");
   const { toast } = useToast();
   const router = useRouter();
-  if (!userId) {
-    router.push("/");
-  }
-  const userNameSigla = localStorage.getItem("userNameSigla");
+  const [userNameSigla, setUserNameSigla] = useState("");
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      router.push("/");
+    }
+    setUserNameSigla(localStorage.getItem("userNameSigla") || "");
+  }, [router]);
+
 
   const [loading, setLoading] = useState(false);
   const [loadingList, setLoadingList] = useState(true);
@@ -45,6 +50,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const userId = localStorage.getItem("userId");
     setLoadingList(true);
     Get({
       url: `lists/find-list-by-user/${userId}`,
@@ -61,7 +67,7 @@ export default function Home() {
       },
       funcFinally: () => {},
     });
-  }, [toast, userId, refresh]);
+  }, [toast, refresh]);
 
   const handleCreateList = async () => {
     if (!name) {
@@ -75,6 +81,7 @@ export default function Home() {
 
     setLoading(true);
 
+    const userId = localStorage.getItem("userId");
     const data = {
       listName: name,
       userId: userId,

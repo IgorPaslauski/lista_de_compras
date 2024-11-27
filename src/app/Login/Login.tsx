@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent,  useEffect, useState } from "react";
 import Link from "next/link";
 import { InputCustomizado } from "../InputCustomizado";
 import { AuthButton } from "./AuthButton";
@@ -9,10 +10,13 @@ import { Post } from "../utils/fetchUtils";
 
 export function Login() {
   const router = useRouter();
-  const token = localStorage.getItem("token");
-  if (token) {
-    router.push("/Lists");
-  }
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/Lists");
+    }
+  }, [router]);
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -59,7 +63,7 @@ export function Login() {
         setIsLoading(false);
 
         if (ret.then) {
-          ret?.then((data) => {
+          ret?.then((data: any) => {
             setError(data.message);
           });
           return;
