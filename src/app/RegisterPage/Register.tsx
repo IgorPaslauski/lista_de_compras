@@ -87,7 +87,7 @@ export function Register() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           value={confirmPassword}
         />
-        <button type="submit" className="button-login">
+        <button type="submit" className="button-login bg-gray-800 p-2 w-full">
           Register
         </button>
         <span className="register-now">

@@ -101,6 +101,7 @@ export default function Home() {
                     key={item.id}
                     item={item}
                     onDelete={() => setRefresh((prev) => !prev)}
+                    onCheck={() => setRefresh((prev) => !prev)}
                   />
                 ))}
             </ul>
@@ -143,14 +144,20 @@ export default function Home() {
                   />
 
                   <DialogFooter>
-                    <div className="flex gap-4 w-full">
-                      <Button type="button" onClick={handleCancel}>
+                     <Button
+                        type="button"
+                        onClick={handleCancel}
+                        className="w-full bg-gray-800"
+                      >
                         Cancel
                       </Button>
-                      <Button type="submit" onClick={handleCreateItem}>
+                      <Button
+                        type="submit"
+                        onClick={handleCreateItem}
+                        className="bg-green-500"
+                      >
                         {loading ? "Creating..." : "Create"}
                       </Button>
-                    </div>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

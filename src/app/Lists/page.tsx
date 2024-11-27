@@ -187,14 +187,20 @@ export default function Home() {
                 />
 
                 <DialogFooter>
-                  <div className="flex gap-4">
-                    <Button type="button" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" onClick={handleCreateList}>
-                      {loading ? "Creating..." : "Create"}
-                    </Button>
-                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleCancel}
+                    className="w-full bg-gray-800"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    onClick={handleCreateList}
+                    className="bg-green-500"
+                  >
+                    {loading ? "Creating..." : "Create"}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

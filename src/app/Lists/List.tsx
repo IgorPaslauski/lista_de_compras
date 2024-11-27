@@ -92,12 +92,15 @@ export function List({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button>Cancel</Button>
+                <Button className="bg-gray-200 w-full bg-gray-800">
+                  Cancel
+                </Button>
               </DialogClose>
               <Button
                 variant="destructive"
                 onClick={handleDelete}
                 disabled={loading}
+                className="bg-red-500"
               >
                 {loading ? "Loading..." : "Delete"}
               </Button>

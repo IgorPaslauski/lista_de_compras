@@ -16,16 +16,16 @@ import { ItemList } from "./ItemList";
 import { Delete, Put } from "../utils/fetchUtils";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export function Item({
   item,
   onDelete,
+  onCheck,
 }: {
   item: ItemList;
   onDelete: () => void;
+  onCheck: () => void;
 }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent<HTMLElement>) => {
@@ -59,6 +59,9 @@ export function Item({
       listId: item.listId,
     };
 
+    console.log(data);
+    console.log(item);
+
     await Put({
       url: `items/update-item/${item.id}`,
       params: data,
@@ -68,7 +71,7 @@ export function Item({
           description: `${new Date().toLocaleString()}`,
           variant: "success",
         });
-        router.refresh();
+        onCheck();
       },
       funcError: () => {
         toast({
@@ -115,12 +118,21 @@ export function Item({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button>Cancel</Button>
+                <Button
+                  className="bg-gray-800 w-full"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  Cancel
+                </Button>
               </DialogClose>
               <Button
                 variant="destructive"
                 onClick={handleDelete}
                 disabled={loading}
+                className="bg-red-500"
               >
                 {loading ? "Deleting..." : "Delete"}
               </Button>
