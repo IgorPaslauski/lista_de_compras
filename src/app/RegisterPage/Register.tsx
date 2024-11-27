@@ -33,7 +33,7 @@ export function Register() {
       const data = { name, email, password };
 
       Post({
-        url: "auth/register",
+        url: "users/create-user",
         params: data,
         anonymous: true,
         funcSuccess: () => {
